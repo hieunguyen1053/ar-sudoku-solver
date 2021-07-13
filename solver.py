@@ -1,19 +1,34 @@
-def solve(box):
-    find = find_empty(box)
+import numpy as np
+
+
+def solve(board):
+    find = find_empty(board)
     if not find:
         return True
     else:
         row, col = find
 
-    for i in range(1,10):
-        if valid(box, i, (row, col)):
-            box[row][col] = i
+    for num in possible_numbers(board, (row, col)):
+        if valid(board, num, (row, col)):
+            board[row][col] = num
 
-            if solve(box):
+            if solve(board):
                 return True
 
-            box[row][col] = 0
+            board[row][col] = 0
     return False
+
+def possible_numbers(board, pos):
+    y, x = pos
+    box_x = x // 3
+    box_y = y // 3
+    poss_nums = set(range(1, 10))
+    appeared_num = set()
+    appeared_num |= set(board[:, x])
+    appeared_num |= set(board[y, :])
+    appeared_num |= set(board[box_y*3:box_y*3+3, box_x*3:box_x*3+3].flatten())
+    poss_nums -= appeared_num
+    return list(poss_nums)
 
 def valid(box, num, pos):
     for i in range(len(box[0])):
